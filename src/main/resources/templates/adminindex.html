@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<link href="/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+<title>ECサイト</title>
+</head>
+<body>
+	
+	<header>
+		<h1>My EC Site -- Admin page</h1>
+	</header>
+	
+	<div id="adminPage">
+		<h2>管理者ログイン</h2>
+		<!-- 
+		フォームのname属性はloginForm、HTTPメソッドはPOST、送信先のURLは/ecsite/admin/welcomeです。
+		th:action属性は、Thymeleafの文法を使って、動的に生成されたURLを設定しています。
+		 -->
+		<form name="loginForm" method="post" action="/ecsite/admin/welcome" th:action="@{/ecsite/admin/welcome}">
+			<p>User name:<input type="text" name="userName" /></p>
+			<p>Password :<input type="text" name="password"></p>
+			<button type="submit">Login</button>
+		</form>
+	</div>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!-- 
+Thymeleafは、Javaのテンプレートエンジンの1つであり、Webアプリケーション開発において、動的なHTMLやXMLドキュメントを生成するために使用されます。
+
+具体的には、Thymeleafを使用することで、以下のようなことが可能です。
+
+1.テンプレートの中にJavaのコードを埋め込んで、動的なコンテンツを生成することができます。
+2.テンプレートの中で、HTML要素や属性に直接Javaのオブジェクトや変数をバインドすることができます。
+3.テンプレートの中で、条件分岐やループ処理を行い、複雑なHTMLコンテンツを生成することができます。
+4.テンプレートをビューとして使用し、Webアプリケーションのコントローラーから動的に生成されたデータを組み込んで、Webページを表示することができます。
+ -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<link href="/css/style.css" th:href="@{/css/style.css}" rel="stylesheet" />
+<script src="http://code.jquery.com/jquery-3.4.1.min.js"></script>
+<!-- 
+$()は、jQueryライブラリ内でHTMLドキュメントの要素を選択するための関数です。この場合、$()は空の引数を取っているため、ドキュメント内のすべての要素を選択します。
+
+=>は、アロー関数構文で、無名の関数を定義しています。
+
+{}内には、選択されたすべての要素に対して行われる処理が記述されます。
+ -->
+<script>
+	$(() => {
+		$('.deleteBtn').on('click', (event) => {
+			event.preventDefault();
+			let tdList = $(event.target).parent().parent().find('td');
+			let id = $(tdList[0]).text();
+			let jsonString = {
+					'id': id,
+					'goodsName': $(tdList[1]).text(),
+					'price': ''
+			};
+			$.ajax({
+				type: 'POST',
+				url: '/ecsite/admin/api/deleteGoods',
+				data: JSON.stringify(jsonString),
+				contentType: 'application/json',
+				scriptCharset: 'utf-8'
+			})
+			.then((result) => {
+					console.log(result);
+					alert(`商品 [${jsonString.goodsName}] を削除しました。`);
+					$(tdList).parent().remove();
+				}, () => {
+					console.error('Error: ajax connnection failed.');
+				}
+			);
+		});
+	});
+</script>
+<title>ECサイト</title>
+</head>
+<body>
+	
+	<header>
+		<h1>My EC Site</h1>
+	</header>
+	
+	<table id="adminTable">
+		<thead>
+			<!-- テーブルの行（row） -->
+			<tr>
+				<!-- テーブルのヘッダーセル（header cell）、通常はテーブルの列（column）のラベルを表示するために使用されます。-->
+				<th>ID</th><th>商品名</th><th>価額</th><th>削除</th>
+			</tr>
+		</thead>
+		<tbody>
+			<!-- 
+			th:eachは、Thymeleafテンプレートエンジンで使用される属性の1つで、反復処理を行うために使用されます。
+			itemは反復処理中に使用される各要素を表します。
+			 -->
+			<tr th:each="item: ${goods}">
+				<td th:text="${item.id}" />
+				<td th:text="${item.goodsName}" />
+				<td th:text="${item.price}" />
+				<td><button type="submit" class="deleteBtn">削除</button></td>	
+			</tr>
+		</tbody>
+	</table>
+
+	<form id="adminpage" name="goodsname" method="post"
+	      action="ecsite/admin/goodsMst" th:action="@{/ecsite/admin/goodsMst}">
+	      
+	      <button type="submit" th:if="${userName != null}">新規追加</button>
+	      <input type="hidden" name="userName" th:value="${userName}" />
+	      <input type="hidden" name="password" th:value="${password}" />
+		
+	</form>
+	
+</body>
+</html>
